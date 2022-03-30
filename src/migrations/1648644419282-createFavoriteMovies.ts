@@ -1,7 +1,7 @@
 import {MigrationInterface, QueryRunner} from "typeorm";
 
-export class createFavoriteMovies1648633274614 implements MigrationInterface {
-    name = 'createFavoriteMovies1648633274614'
+export class createFavoriteMovies1648644419282 implements MigrationInterface {
+    name = 'createFavoriteMovies1648644419282'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`CREATE TABLE "favorite_movies" ("id" SERIAL NOT NULL, "favoriteIds" integer NOT NULL, "isWatched" boolean NOT NULL DEFAULT false, "createDate" TIMESTAMP NOT NULL DEFAULT now(), "userId" integer, CONSTRAINT "PK_7766c007e2e95de1d7a48953cbd" PRIMARY KEY ("id"))`);

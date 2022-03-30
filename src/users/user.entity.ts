@@ -1,6 +1,12 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany, CreateDateColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  OneToMany,
+  CreateDateColumn,
+} from 'typeorm';
 import { FavoriteMovies } from './favoriteMovies/favoriteMovies.entity';
-import {Genres} from './genres/genres.entity'
+import { Genres } from './genres/genres.entity';
 
 @Entity()
 export class User {
@@ -12,14 +18,13 @@ export class User {
 
   @Column()
   password: string;
-  
-  @CreateDateColumn()
-  createDate: Date
 
-  @OneToMany(()=> Genres, (genres)=>genres.user)
+  @CreateDateColumn()
+  createDate: Date;
+
+  @OneToMany(() => Genres, (genres) => genres.user)
   genres: Genres[];
 
-  @OneToMany(()=>FavoriteMovies, (favoriteMovies)=>favoriteMovies.user)
+  @OneToMany(() => FavoriteMovies, (favoriteMovies) => favoriteMovies.user)
   favoriteMovies: FavoriteMovies[];
-
 }

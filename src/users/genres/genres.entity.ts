@@ -1,5 +1,11 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, CreateDateColumn } from 'typeorm';
-import {User} from '../user.entity'
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  CreateDateColumn,
+} from 'typeorm';
+import { User } from '../user.entity';
 
 @Entity()
 export class Genres {
@@ -7,14 +13,14 @@ export class Genres {
   id: number;
 
   @Column()
-  genresIds: number
+  genresIds: number;
 
   @Column()
-  isChecked: boolean
+  isChecked: boolean;
 
   @CreateDateColumn()
-  createDate: Date
+  createDate: Date;
 
-  @ManyToOne(() => User, (user)=>user.genres)
-  user: User
+  @ManyToOne(() => User, (user) => user.genres)
+  user: User;
 }

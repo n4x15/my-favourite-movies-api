@@ -1,20 +1,26 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, CreateDateColumn } from 'typeorm';
-import {User} from '../user.entity'
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  CreateDateColumn,
+} from 'typeorm';
+import { User } from '../user.entity';
 
 @Entity()
 export class FavoriteMovies {
   @PrimaryGeneratedColumn()
   id: number;
-  
+
   @Column()
   favoriteIds: number;
 
-  @Column({default: false})
+  @Column({ default: false })
   isWatched: boolean;
 
   @CreateDateColumn()
   createDate: Date;
 
-  @ManyToOne(()=> User, (user) => user.favoriteMovies)
+  @ManyToOne(() => User, (user) => user.favoriteMovies)
   user: User;
-    }
+}
