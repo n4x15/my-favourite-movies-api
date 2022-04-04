@@ -7,11 +7,11 @@ const mapArgsToApi = (filters: GetMoviesArgs): string =>
     ...filters,
     ...(filters.genresId ? { with_genres: `${filters.genresId}` } : {}),
     ...(filters.rating ? { 'vote_average.gte': `${filters.rating}` } : {}),
-    page: 1,
+    
   })
     .map(([key, val]) => `${key}=${val}`)
     .join('&');
 
-export const effectiveUrl = (filters: GetMoviesArgs) => {
+export const moviesListUrl = (filters: GetMoviesArgs) => {
   return `${moviesUrl}?${mapArgsToApi(filters)}`;
 };

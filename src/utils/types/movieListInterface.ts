@@ -3,4 +3,5 @@ export interface GetMoviesArgs {
   genresId?: number[];
   year?: number;
   rating?: number;
+  page?: number;
 }

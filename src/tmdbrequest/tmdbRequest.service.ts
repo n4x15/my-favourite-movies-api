@@ -1,42 +1,67 @@
 import { HttpService } from '@nestjs/axios';
-import { Injectable } from '@nestjs/common';
-import { catchError, map, of } from 'rxjs';
+import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
+import { catchError, map, Observable } from 'rxjs';
 import { GetMoviesArgs } from 'src/utils/types/movieListInterface';
 import { genresUrl, movieUrl } from 'src/utils/urls';
-import { effectiveUrl } from 'src/utils/utils';
+import { moviesListUrl } from 'src/utils/utils';
+import { AxiosResponse } from 'axios';
+import { GenresDto } from './dto/genres.dto';
+import { MovieDto } from './dto/movie.dto';
 
 @Injectable()
 export class TmdbRequestService {
-  constructor(private httpService: HttpService) {}
+  logger: Logger;
 
-  getGenres() {
+  constructor(private httpService: HttpService) {
+    this.logger = new Logger(TmdbRequestService.name);
+  }
+
+  getGenres(): Observable<AxiosResponse<GenresDto[]>> {
     return this.httpService
       .get(genresUrl + '?api_key=' + process.env.TMDB_API)
       .pipe(
         map((response) => {
-          return response.data;
+          return response.data.genres;
         }),
-        catchError(err => of([]))
+        catchError((err) => {
+          this.logger.error(err);
+          throw new HttpException(
+            'INTERNAL SERVER ERROR',
+            HttpStatus.INTERNAL_SERVER_ERROR,
+          );
+        }),
       );
   }
 
-  getMovies(filters: GetMoviesArgs) {
-    return this.httpService.get(effectiveUrl(filters)).pipe(
+  getMovies(filters: GetMoviesArgs): Observable<AxiosResponse<MovieDto[]>> {
+    return this.httpService.get(moviesListUrl(filters)).pipe(
       map((response) => {
-        return response.data;
+        return response.data.results;
       }),
-      catchError(err => of([]))
+      catchError((err) => {
+        this.logger.error(err);
+        throw new HttpException(
+          'INTERNAL SERVER ERROR',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }),
     );
   }
 
-  getMovie(id: number) {
+  getMovie(id: number): Observable<AxiosResponse<MovieDto>> {
     return this.httpService
       .get(movieUrl + '?id=' + id + '?api_key=' + process.env.TMDB_API)
       .pipe(
         map((response) => {
           return response.data;
         }),
-        catchError(err => of([]))
+        catchError((err) => {
+          this.logger.error(err);
+          throw new HttpException(
+            'INTERNAL SERVER ERROR',
+            HttpStatus.INTERNAL_SERVER_ERROR,
+          );
+        }),
       );
   }
 }

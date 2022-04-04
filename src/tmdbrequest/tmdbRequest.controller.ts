@@ -6,17 +6,17 @@ import { TmdbRequestService } from './tmdbRequest.service';
 export class TmdbRequestController {
   constructor(private readonly tmdbRequestService: TmdbRequestService) {}
 
-  @Get('genres')
+  @Get()
   getGenres() {
     return this.tmdbRequestService.getGenres();
   }
 
-  @Get('movies')
+  @Get()
   getMovies(filters: GetMoviesArgs) {
     return this.tmdbRequestService.getMovies(filters);
   }
 
-  @Get('movieDetail')
+  @Get()
   getMovie(id: number) {
     return this.tmdbRequestService.getMovie(id);
   }
