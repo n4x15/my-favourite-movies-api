@@ -33,7 +33,7 @@ export class TmdbRequestService {
       );
   }
 
-  getMovies(filters: GetMoviesArgs): Observable<AxiosResponse<MovieDto[]>> {
+  getMovies(filters: GetMoviesArgs): Observable<MovieDto[]> {
     return this.httpService.get(moviesListUrl(filters)).pipe(
       map((response) => {
         return response.data.results;
@@ -48,9 +48,9 @@ export class TmdbRequestService {
     );
   }
 
-  getMovie(id: number): Observable<AxiosResponse<MovieDto>> {
+  getMovie(id: number): Observable<MovieDto> {
     return this.httpService
-      .get(movieUrl + '?id=' + id + '?api_key=' + process.env.TMDB_API)
+      .get(movieUrl + id + '?api_key=' + process.env.TMDB_API)
       .pipe(
         map((response) => {
           return response.data;
