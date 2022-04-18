@@ -7,7 +7,7 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
-type FavoriteMovies {
+type FavoriteMovie {
   createDate: DateTime!
   favoriteId: Float!
   id: ID!
@@ -15,11 +15,10 @@ type FavoriteMovies {
   user: User!
 }
 
-type Genres {
+type Genre {
   createDate: DateTime!
-  genresId: Float!
+  genreId: Float!
   id: ID!
-  isChecked: Boolean!
   user: User!
 }
 
@@ -51,25 +50,25 @@ input MoviesInputDto {
 }
 
 type Mutation {
-  addGenres(id: Float!): Genres!
-  addMovie(id: Float!): FavoriteMovies!
+  addGenres(id: Float!): User!
+  addMovie(id: Float!): User!
   logIn(login: String!, password: String!): LogInDto!
-  removeGenres(id: Float!): Genres!
-  removeMovie(id: Float!): FavoriteMovies!
-  setWatched(id: Float!): FavoriteMovies!
+  removeGenres(id: Float!): User!
+  removeMovie(id: Float!): User!
+  setWatched(id: Float!): User!
 }
 
 type Query {
   getGenres: [GenresDto!]!
   getMovies(filters: MoviesInputDto!): [MovieDto!]!
-  getUserGenres: [Genres!]!
+  getUserGenres: [Genre!]!
   getUserMovies: [MovieDto!]!
 }
 
 type User {
   createDate: DateTime!
-  favoriteMovies: [FavoriteMovies!]!
-  genres: [Genres!]!
+  favoriteMovies: [FavoriteMovie!]!
+  genres: [Genre!]!
   id: ID!
   login: String!
   password: String!

@@ -34,7 +34,10 @@ export class UserService {
   }
 
   async getUser(login: string): Promise<User> {
-    const user = await this.userRepository.findOne({ login });
+    const user = await this.userRepository.findOne(
+      { login },
+      { relations: ['favoriteMovies', 'genres'] },
+    );
     return user;
   }
 }

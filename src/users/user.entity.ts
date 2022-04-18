@@ -5,8 +5,8 @@ import {
   OneToMany,
   CreateDateColumn,
 } from 'typeorm';
-import { FavoriteMovies } from './favoriteMovies/favoriteMovies.entity';
-import { Genres } from './genres/genres.entity';
+import { FavoriteMovie } from './favoriteMovies/favoriteMovies.entity';
+import { Genre } from './genres/genres.entity';
 import { ObjectType, Field, ID } from '@nestjs/graphql';
 
 @ObjectType()
@@ -17,7 +17,7 @@ export class User {
   id: number;
 
   @Field()
-  @Column({unique: true})
+  @Column({ unique: true })
   login: string;
 
   @Field()
@@ -28,11 +28,13 @@ export class User {
   @CreateDateColumn()
   createDate: Date;
 
-  @Field(() => [Genres])
-  @OneToMany(() => Genres, (genres) => genres.user)
-  genres: Genres[];
+  @Field(() => [Genre])
+  @OneToMany(() => Genre, (genres) => genres.user, { cascade: true })
+  genres: Genre[];
 
-  @Field(() => [FavoriteMovies])
-  @OneToMany(() => FavoriteMovies, (favoriteMovies) => favoriteMovies.user)
-  favoriteMovies: FavoriteMovies[];
+  @Field(() => [FavoriteMovie])
+  @OneToMany(() => FavoriteMovie, (favoriteMovies) => favoriteMovies.user, {
+    cascade: true,
+  })
+  favoriteMovies: FavoriteMovie[];
 }

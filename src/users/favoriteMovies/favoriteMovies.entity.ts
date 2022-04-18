@@ -10,7 +10,7 @@ import { ObjectType, Field, ID } from '@nestjs/graphql';
 
 @ObjectType()
 @Entity()
-export class FavoriteMovies {
+export class FavoriteMovie {
   @Field(() => ID)
   @PrimaryGeneratedColumn()
   id: number;
@@ -28,6 +28,8 @@ export class FavoriteMovies {
   createDate: Date;
 
   @Field(() => User)
-  @ManyToOne(() => User, (user) => user.favoriteMovies)
+  @ManyToOne(() => User, (user) => user.favoriteMovies, {
+    orphanedRowAction: 'delete',
+  })
   user: User;
 }

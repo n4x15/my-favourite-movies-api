@@ -3,9 +3,8 @@ import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { MovieDto } from 'src/tmdbrequest/dto/movie.dto';
 import { AuthGuard } from '../authguard/auth.guard';
 import { User } from '../user.entity';
-import { FavoriteMovies } from './favoriteMovies.entity';
+import { FavoriteMovie } from './favoriteMovies.entity';
 import { FavoriteMoviesService } from './favoriteMovies.service';
-import { AxiosResponse } from 'axios';
 
 @Resolver()
 @UseGuards(AuthGuard)
@@ -13,33 +12,31 @@ export class FavoriteMoviesResolver {
   constructor(private favoriteMoviesService: FavoriteMoviesService) {}
 
   @Query(() => [MovieDto])
-  async getUserMovies(
-    @Context('user') user: User,
-  ): Promise<MovieDto[]> {
+  async getUserMovies(@Context('user') user: User): Promise<MovieDto[]> {
     return this.favoriteMoviesService.getUserMovies(user.login);
   }
 
-  @Mutation(() => FavoriteMovies)
+  @Mutation(() => User)
   async addMovie(
     @Args('id') id: number,
     @Context('user') user: User,
-  ): Promise<FavoriteMovies> {
+  ): Promise<User> {
     return this.favoriteMoviesService.addMovie(id, user.login);
   }
 
-  @Mutation(() => FavoriteMovies)
+  @Mutation(() => User)
   async removeMovie(
     @Args('id') id: number,
     @Context('user') user: User,
-  ): Promise<FavoriteMovies> {
+  ): Promise<User> {
     return this.favoriteMoviesService.removeMovie(id, user.login);
   }
 
-  @Mutation(() => FavoriteMovies)
+  @Mutation(() => User)
   async setWatched(
     @Args('id') id: number,
     @Context('user') user: User,
-  ): Promise<FavoriteMovies> {
+  ): Promise<User> {
     return this.favoriteMoviesService.setWatched(id, user.login);
   }
 }

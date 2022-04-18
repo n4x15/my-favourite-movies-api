@@ -4,67 +4,62 @@ import { lastValueFrom } from 'rxjs';
 import { MovieDto } from 'src/tmdbrequest/dto/movie.dto';
 import { TmdbRequestService } from 'src/tmdbrequest/tmdbRequest.service';
 import { Repository } from 'typeorm';
+import { User } from '../user.entity';
 import { UserService } from '../user.service';
-import { FavoriteMovies } from './favoriteMovies.entity';
-import { AxiosResponse } from 'axios';
+import { FavoriteMovie } from './favoriteMovies.entity';
 
 @Injectable()
 export class FavoriteMoviesService {
   constructor(
-    @InjectRepository(FavoriteMovies)
-    private favoriteMoviesRepository: Repository<FavoriteMovies>,
+    @InjectRepository(FavoriteMovie)
+    private favoriteMoviesRepository: Repository<FavoriteMovie>,
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
     private userService: UserService,
     private tmdbRequestService: TmdbRequestService,
   ) {}
 
   async getUserMovies(login: string): Promise<MovieDto[]> {
     const user = await this.userService.getUser(login);
-    const userMoviesFromDB = await this.favoriteMoviesRepository.find({
-      where: { user },
-    });
     const userMovies = await Promise.all(
-      userMoviesFromDB.map((movie) =>
+      user.favoriteMovies.map((movie) =>
         lastValueFrom(this.tmdbRequestService.getMovie(movie.favoriteId)),
       ),
     );
     userMovies.map((movie, index) => {
-      movie.isWatched = userMoviesFromDB[index].isWatched;
+      movie.isWatched = user.favoriteMovies[index].isWatched;
     });
     return userMovies;
   }
 
-  async addMovie(id: number, login: string): Promise<FavoriteMovies> {
+  async addMovie(id: number, login: string): Promise<User> {
     const user = await this.userService.getUser(login);
-    if (
-      !(await this.favoriteMoviesRepository.findOne({
-        where: { favoriteId: id, user },
-      }))
-    ) {
-      return await this.favoriteMoviesRepository.save({
+    const movieExist = user.favoriteMovies.find(
+      (movie) => movie.favoriteId === id,
+    );
+    if (!movieExist) {
+      const favoriteMovie = this.favoriteMoviesRepository.create({
         favoriteId: id,
-        isWatched: false,
-        user,
       });
+      user.favoriteMovies.push(favoriteMovie);
+      return await this.userRepository.save(user);
     }
   }
 
-  async removeMovie(id: number, login: string): Promise<FavoriteMovies> {
+  async removeMovie(id: number, login: string): Promise<User> {
     const user = await this.userService.getUser(login);
-    const movie = await this.favoriteMoviesRepository.findOne({
-      where: { favoriteId: id, user },
-    });
-    await this.favoriteMoviesRepository.remove(movie);
-    return movie;
+    user.favoriteMovies = user.favoriteMovies.filter(
+      (movie) => movie.favoriteId != id,
+    );
+    return await this.userRepository.save(user);
   }
 
-  async setWatched(id: number, login: string): Promise<FavoriteMovies> {
+  async setWatched(id: number, login: string): Promise<User> {
     const user = await this.userService.getUser(login);
-    const movie = await this.favoriteMoviesRepository.findOne({
-      where: { favoriteId: id, user },
-    });
-    await this.favoriteMoviesRepository.update(movie.id, {
-      isWatched: !movie.isWatched,
-    });
-    return movie;
+    user.favoriteMovies.map(
+      (movie) =>
+        movie.favoriteId === id && (movie.isWatched = !movie.isWatched),
+    );
+    return await this.userRepository.save(user);
   }
 }
