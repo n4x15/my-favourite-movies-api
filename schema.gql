@@ -1,0 +1,75 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type FavoriteMovie {
+  createDate: DateTime!
+  favoriteId: Float!
+  id: ID!
+  isWatched: Boolean!
+  user: User!
+}
+
+type Genre {
+  createDate: DateTime!
+  genreId: Float!
+  id: ID!
+  user: User!
+}
+
+type GenresDto {
+  id: Float!
+  name: String!
+}
+
+type LogInDto {
+  accessToken: String!
+}
+
+type MovieDto {
+  id: Float!
+  isWatched: Boolean!
+  overview: String!
+  poster_path: String!
+  release_date: String!
+  title: String!
+  vote_average: Float!
+}
+
+input MoviesInputDto {
+  genresId: [Float!]
+  language: String
+  page: Float
+  rating: Float
+  year: Float
+}
+
+type Mutation {
+  addGenres(id: Float!): User!
+  addMovie(id: Float!): User!
+  logIn(login: String!, password: String!): LogInDto!
+  removeGenres(id: Float!): User!
+  removeMovie(id: Float!): User!
+  setWatched(id: Float!): User!
+}
+
+type Query {
+  getGenres: [GenresDto!]!
+  getMovies(filters: MoviesInputDto!): [MovieDto!]!
+  getUserGenres: [Genre!]!
+  getUserMovies: [MovieDto!]!
+}
+
+type User {
+  createDate: DateTime!
+  favoriteMovies: [FavoriteMovie!]!
+  genres: [Genre!]!
+  id: ID!
+  login: String!
+  password: String!
+}

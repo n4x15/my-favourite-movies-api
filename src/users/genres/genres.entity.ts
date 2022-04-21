@@ -6,21 +6,24 @@ import {
   CreateDateColumn,
 } from 'typeorm';
 import { User } from '../user.entity';
+import { ObjectType, Field, ID } from '@nestjs/graphql';
 
+@ObjectType()
 @Entity()
-export class Genres {
+export class Genre {
+  @Field(() => ID)
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Field()
   @Column()
-  genresIds: number;
+  genreId: number;
 
-  @Column()
-  isChecked: boolean;
-
+  @Field()
   @CreateDateColumn()
   createDate: Date;
 
-  @ManyToOne(() => User, (user) => user.genres)
+  @Field(() => User)
+  @ManyToOne(() => User, (user) => user.genres, { orphanedRowAction: 'delete' })
   user: User;
 }

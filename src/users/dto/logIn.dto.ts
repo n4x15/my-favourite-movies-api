@@ -1,10 +1,7 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 
 @ObjectType()
-export class GenresDto {
+export class LogInDto {
   @Field()
-  id: number;
-  
-  @Field()
-  name: string;
+  accessToken: string;
 }

@@ -6,21 +6,30 @@ import {
   CreateDateColumn,
 } from 'typeorm';
 import { User } from '../user.entity';
+import { ObjectType, Field, ID } from '@nestjs/graphql';
 
+@ObjectType()
 @Entity()
-export class FavoriteMovies {
+export class FavoriteMovie {
+  @Field(() => ID)
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Field()
   @Column()
-  favoriteIds: number;
+  favoriteId: number;
 
+  @Field()
   @Column({ default: false })
   isWatched: boolean;
 
+  @Field()
   @CreateDateColumn()
   createDate: Date;
 
-  @ManyToOne(() => User, (user) => user.favoriteMovies)
+  @Field(() => User)
+  @ManyToOne(() => User, (user) => user.favoriteMovies, {
+    orphanedRowAction: 'delete',
+  })
   user: User;
 }
