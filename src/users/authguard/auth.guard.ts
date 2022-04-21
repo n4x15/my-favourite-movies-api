@@ -1,36 +1,11 @@
-import {
-  ExecutionContext,
-  CanActivate,
-  Injectable,
-  HttpStatus,
-  HttpException,
-  Logger,
-} from '@nestjs/common';
+import { ExecutionContext, Injectable } from '@nestjs/common';
 import { GqlExecutionContext } from '@nestjs/graphql';
+import { AuthGuard } from '@nestjs/passport';
 
 @Injectable()
-export class AuthGuard implements CanActivate {
-  logger: Logger;
-  constructor() {
-    this.logger = new Logger(AuthGuard.name);
-  }
-
-  canActivate(ctx: ExecutionContext):boolean {
-    const context = GqlExecutionContext.create(ctx).getContext();
-    context.user = this.verifyToken(context.headers['authorization']);
-    return true;
-  }
-
-  verifyToken(token: string) {
-    const jwt = require('jsonwebtoken');
-    token = token.split(' ')[1];
-    return jwt.verify(token, process.env.JWT_SECRET_KEY, (err, decoded) => {
-      if (err) {
-        this.logger.error(err);
-        throw new HttpException('Invalid Token', HttpStatus.UNAUTHORIZED);
-      } else {
-        return decoded;
-      }
-    });
+export class GqlAuthGuard extends AuthGuard('jwt') {
+  getRequest(context: ExecutionContext) {
+    const ctx = GqlExecutionContext.create(context);
+    return ctx.getContext().req;
   }
 }

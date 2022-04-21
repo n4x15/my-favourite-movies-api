@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../user.entity';
@@ -16,17 +16,19 @@ export class GenresService {
   ) {}
 
   async getUserGenres(login: string): Promise<Genre[]> {
-    const user = await this.userService.getUser(login);
-    return user.genres;
+    const { genres } = await this.userService.getUser(login);
+    return genres;
   }
 
   async addGenres(id: number, login: string): Promise<User> {
     const user = await this.userService.getUser(login);
     const genreExist = user.genres.find((genre) => genre.genreId === id);
     if (!genreExist) {
-      const genre = this.genresRepository.create({ genreId: id });
+      const genre = this.genresRepository.create({ genreId: id, user: user });
       user.genres.push(genre);
       return this.userRepository.save(user);
+    } else {
+      throw new HttpException('Genre is already added', HttpStatus.BAD_REQUEST);
     }
   }
 

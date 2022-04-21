@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { lastValueFrom } from 'rxjs';
 import { MovieDto } from 'src/tmdbrequest/dto/movie.dto';
@@ -40,9 +40,12 @@ export class FavoriteMoviesService {
     if (!movieExist) {
       const favoriteMovie = this.favoriteMoviesRepository.create({
         favoriteId: id,
+        user: user,
       });
       user.favoriteMovies.push(favoriteMovie);
       return await this.userRepository.save(user);
+    } else {
+      throw new HttpException('Movie is already added', HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -56,7 +59,7 @@ export class FavoriteMoviesService {
 
   async setWatched(id: number, login: string): Promise<User> {
     const user = await this.userService.getUser(login);
-    user.favoriteMovies.map(
+    user.favoriteMovies.find(
       (movie) =>
         movie.favoriteId === id && (movie.isWatched = !movie.isWatched),
     );

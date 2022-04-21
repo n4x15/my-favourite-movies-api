@@ -1,36 +1,37 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { LogInDto } from './dto/logIn.dto';
 import { User } from './user.entity';
+import * as bcrypt from 'bcrypt';
+import { saltOrRounds } from 'src/utils/constants';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class UserService {
   constructor(
+    private jwtService: JwtService,
     @InjectRepository(User)
     private userRepository: Repository<User>,
   ) {}
 
   async logIn(login: string, password: string): Promise<LogInDto> {
     let user = await this.getUser(login);
-    if (!user) {
+    if (user) {
+      const isMatchPassword = await bcrypt.compare(password, user.password);
+      if (!isMatchPassword) {
+        throw new HttpException('Incorrect password', HttpStatus.UNAUTHORIZED);
+      }
+    } else {
       user = await this.createUser(login, password);
     }
-    return this.generateJWT(user);
+    const payload = { login: user.login, sub: user.id };
+    return { accessToken: this.jwtService.sign(payload) };
   }
 
   async createUser(login: string, password: string): Promise<User> {
-    return await this.userRepository.save({ login, password });
-  }
-
-  async generateJWT({ id, login, password }: User): Promise<LogInDto> {
-    const jwt = require('jsonwebtoken');
-    return {
-      accessToken: jwt.sign(
-        { id, login, password },
-        process.env.JWT_SECRET_KEY,
-      ),
-    };
+    const hashPassword = await bcrypt.hash(password, saltOrRounds);
+    return await this.userRepository.save({ login, password: hashPassword });
   }
 
   async getUser(login: string): Promise<User> {

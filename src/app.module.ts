@@ -7,6 +7,7 @@ import { UserModule } from './users/user.module';
 import { GenresModule } from './users/genres/genres.module';
 import { FavoriteMoviesModule } from './users/favoriteMovies/favoriteMovies.module';
 import { ApolloServerPluginLandingPageLocalDefault } from 'apollo-server-core';
+import { JwtStrategy } from './users/authguard/jwt.strategy';
 
 @Module({
   imports: [
@@ -16,10 +17,6 @@ import { ApolloServerPluginLandingPageLocalDefault } from 'apollo-server-core';
     FavoriteMoviesModule,
     TmdbRequestModule,
     GraphQLModule.forRoot<ApolloDriverConfig>({
-      context: ({ req }) => ({
-        user: req.user,
-        headers: req.headers,
-      }),
       driver: ApolloDriver,
       autoSchemaFile: 'schema.gql',
       sortSchema: true,
@@ -27,5 +24,6 @@ import { ApolloServerPluginLandingPageLocalDefault } from 'apollo-server-core';
       plugins: [ApolloServerPluginLandingPageLocalDefault()],
     }),
   ],
+  providers: [JwtStrategy],
 })
 export class AppModule {}
