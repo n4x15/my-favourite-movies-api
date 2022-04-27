@@ -33,12 +33,13 @@ type LogInDto {
 
 type MovieDto {
   id: Float!
+  isSaved: Boolean!
   isWatched: Boolean!
   overview: String!
-  poster_path: String!
-  release_date: String!
+  posterPath: String!
+  releaseDate: String!
   title: String!
-  vote_average: Float!
+  voteAverage: Float!
 }
 
 input MoviesInputDto {
@@ -59,6 +60,7 @@ type Mutation {
 }
 
 type Query {
+  Movies(filters: MoviesInputDto!): [MovieDto!]!
   getGenres: [GenresDto!]!
   getMovies(filters: MoviesInputDto!): [MovieDto!]!
   getUserGenres: [Genre!]!

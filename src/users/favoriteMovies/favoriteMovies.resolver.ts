@@ -1,6 +1,7 @@
 import { UseGuards } from '@nestjs/common';
 import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { MovieDto } from 'src/tmdbrequest/dto/movie.dto';
+import { MoviesInputDto } from 'src/tmdbrequest/dto/moviesInput.dto';
 import { GqlAuthGuard } from '../authguard/auth.guard';
 import { CurrentUser } from '../decorator/currentUser.decorator';
 import { User } from '../user.entity';
@@ -38,5 +39,13 @@ export class FavoriteMoviesResolver {
     @CurrentUser() { login }: User,
   ): Promise<User> {
     return this.favoriteMoviesService.setWatched(id, login);
+  }
+
+  @Query(() => [MovieDto], { name: 'Movies' })
+  async getMovies(
+    @Args('filters') filters: MoviesInputDto,
+    @CurrentUser() { login }: User,
+  ): Promise<MovieDto[]> {
+    return this.favoriteMoviesService.getMovies(login, filters);
   }
 }

@@ -8,18 +8,21 @@ export class MovieDto {
   @Field()
   overview: string;
 
-  @Field({ name: 'poster_path' })
-  posterPath: string;
+  @Field({ name: 'posterPath' })
+  poster_path: string;
 
-  @Field({ name: 'release_date' })
-  releaseDate: string;
+  @Field({ name: 'releaseDate' })
+  release_date: string;
 
   @Field()
   title: string;
 
-  @Field({ name: 'vote_average' })
-  voteAverage: number;
+  @Field({ name: 'voteAverage' })
+  vote_average: number;
 
   @Field({ defaultValue: false })
   isWatched: boolean;
+
+  @Field({ defaultValue: false })
+  isSaved: boolean;
 }

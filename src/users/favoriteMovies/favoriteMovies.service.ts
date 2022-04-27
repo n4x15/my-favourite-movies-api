@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { lastValueFrom } from 'rxjs';
 import { MovieDto } from 'src/tmdbrequest/dto/movie.dto';
 import { TmdbRequestService } from 'src/tmdbrequest/tmdbRequest.service';
+import { GetMoviesArgs } from 'src/utils/types/movieListInterface';
 import { Repository } from 'typeorm';
 import { User } from '../user.entity';
 import { UserService } from '../user.service';
@@ -21,14 +22,31 @@ export class FavoriteMoviesService {
 
   async getUserMovies(login: string): Promise<MovieDto[]> {
     const user = await this.userService.getUser(login);
+    const moviesId = [];
     const userMovies = await Promise.all(
       user.favoriteMovies.map((movie) =>
         lastValueFrom(this.tmdbRequestService.getMovie(movie.favoriteId)),
       ),
     );
-    userMovies.map((movie, index) => {
-      movie.isWatched = user.favoriteMovies[index].isWatched;
+    user.favoriteMovies.forEach((movie) =>
+      movie.isWatched && moviesId.push(movie.favoriteId)
+    );
+    userMovies.map((movie) => {
+      moviesId.includes(movie.id) && (movie.isWatched = true);
     });
+    return userMovies;
+  }
+
+  async getMovies(login: string, filters: GetMoviesArgs): Promise<MovieDto[]> {
+    const user = await this.userService.getUser(login);
+    const moviesId = [];
+    user.favoriteMovies.forEach((movie) => moviesId.push(movie.favoriteId));
+    const userMovies = await lastValueFrom(
+      this.tmdbRequestService.getMovies(filters),
+    );
+    userMovies.map(
+      (movie) => moviesId.includes(movie.id) && (movie.isSaved = true),
+    );
     return userMovies;
   }
 
