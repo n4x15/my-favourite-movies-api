@@ -29,7 +29,7 @@ export class FavoriteMoviesService {
       ),
     );
     user.favoriteMovies.forEach((movie) =>
-      moviesId.push(movie.isWatched && movie.favoriteId),
+      movie.isWatched && moviesId.push(movie.favoriteId)
     );
     userMovies.map((movie) => {
       moviesId.includes(movie.id) && (movie.isWatched = true);
