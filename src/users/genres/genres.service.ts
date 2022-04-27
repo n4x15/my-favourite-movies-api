@@ -26,10 +26,10 @@ export class GenresService {
     if (!genreExist) {
       const genre = this.genresRepository.create({ genreId: id, user: user });
       user.genres.push(genre);
-      return this.userRepository.save(user);
     } else {
-      throw new HttpException('Genre is already added', HttpStatus.BAD_REQUEST);
+      user.genres = user.genres.filter((genre) => genre.genreId != id);
     }
+    return this.userRepository.save(user);
   }
 
   async removeGenres(id: number, login: string): Promise<User> {
