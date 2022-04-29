@@ -8,7 +8,7 @@ export class MovieDto {
   @Field()
   overview: string;
 
-  @Field({ name: 'posterPath' })
+  @Field({ name: 'posterPath', nullable: true })
   poster_path: string;
 
   @Field({ name: 'releaseDate' })

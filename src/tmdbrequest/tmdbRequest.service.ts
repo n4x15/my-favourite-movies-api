@@ -7,6 +7,7 @@ import { moviesListUrl } from 'src/utils/utils';
 import { AxiosResponse } from 'axios';
 import { GenresDto } from './dto/genres.dto';
 import { MovieDto } from './dto/movie.dto';
+import { ResponseMovieDto } from './dto/response.movie.dto';
 
 @Injectable()
 export class TmdbRequestService {
@@ -16,9 +17,15 @@ export class TmdbRequestService {
     this.logger = new Logger(TmdbRequestService.name);
   }
 
-  getGenres(): Observable<AxiosResponse<GenresDto[]>> {
+  getGenres(language: string): Observable<GenresDto[]> {
     return this.httpService
-      .get(genresUrl + '?api_key=' + process.env.TMDB_API)
+      .get(
+        genresUrl +
+          '?api_key=' +
+          process.env.TMDB_API +
+          '&language=' +
+          language,
+      )
       .pipe(
         map((response) => {
           return response.data.genres;
@@ -33,10 +40,10 @@ export class TmdbRequestService {
       );
   }
 
-  getMovies(filters: GetMoviesArgs): Observable<MovieDto[]> {
+  getMovies(filters: GetMoviesArgs): Observable<ResponseMovieDto> {
     return this.httpService.get(moviesListUrl(filters)).pipe(
       map((response) => {
-        return response.data.results;
+        return response.data;
       }),
       catchError((err) => {
         this.logger.error(err);
@@ -48,9 +55,16 @@ export class TmdbRequestService {
     );
   }
 
-  getMovie(id: number): Observable<MovieDto> {
+  getMovie(id: number, language: string): Observable<MovieDto> {
     return this.httpService
-      .get(movieUrl + id + '?api_key=' + process.env.TMDB_API)
+      .get(
+        movieUrl +
+          id +
+          '?api_key=' +
+          process.env.TMDB_API +
+          '&language=' +
+          language,
+      )
       .pipe(
         map((response) => {
           return response.data;
