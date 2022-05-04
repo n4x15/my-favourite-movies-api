@@ -36,7 +36,7 @@ type MovieDto {
   isSaved: Boolean!
   isWatched: Boolean!
   overview: String!
-  posterPath: String!
+  posterPath: String
   releaseDate: String!
   title: String!
   voteAverage: Float!
@@ -60,11 +60,16 @@ type Mutation {
 }
 
 type Query {
-  Movies(filters: MoviesInputDto!): [MovieDto!]!
-  getGenres: [GenresDto!]!
+  Movies(filters: MoviesInputDto!): ResponseMovieDto!
+  getGenres(language: String!): [GenresDto!]!
   getMovies(filters: MoviesInputDto!): [MovieDto!]!
   getUserGenres: [Genre!]!
-  getUserMovies: [MovieDto!]!
+  getUserMovies(language: String!): [MovieDto!]!
+}
+
+type ResponseMovieDto {
+  results: [MovieDto!]!
+  totalPages: Float!
 }
 
 type User {

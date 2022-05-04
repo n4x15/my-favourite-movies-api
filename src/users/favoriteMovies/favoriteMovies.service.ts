@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { lastValueFrom } from 'rxjs';
 import { MovieDto } from 'src/tmdbrequest/dto/movie.dto';
+import { ResponseMovieDto } from 'src/tmdbrequest/dto/response.movie.dto';
 import { TmdbRequestService } from 'src/tmdbrequest/tmdbRequest.service';
 import { GetMoviesArgs } from 'src/utils/types/movieListInterface';
 import { Repository } from 'typeorm';
@@ -20,16 +21,18 @@ export class FavoriteMoviesService {
     private tmdbRequestService: TmdbRequestService,
   ) {}
 
-  async getUserMovies(login: string): Promise<MovieDto[]> {
+  async getUserMovies(login: string, language: string): Promise<MovieDto[]> {
     const user = await this.userService.getUser(login);
     const moviesId = [];
     const userMovies = await Promise.all(
       user.favoriteMovies.map((movie) =>
-        lastValueFrom(this.tmdbRequestService.getMovie(movie.favoriteId)),
+        lastValueFrom(
+          this.tmdbRequestService.getMovie(movie.favoriteId, language),
+        ),
       ),
     );
-    user.favoriteMovies.forEach((movie) =>
-      movie.isWatched && moviesId.push(movie.favoriteId)
+    user.favoriteMovies.forEach(
+      (movie) => movie.isWatched && moviesId.push(movie.favoriteId),
     );
     userMovies.map((movie) => {
       moviesId.includes(movie.id) && (movie.isWatched = true);
@@ -37,14 +40,17 @@ export class FavoriteMoviesService {
     return userMovies;
   }
 
-  async getMovies(login: string, filters: GetMoviesArgs): Promise<MovieDto[]> {
+  async getMovies(
+    login: string,
+    filters: GetMoviesArgs,
+  ): Promise<ResponseMovieDto> {
     const user = await this.userService.getUser(login);
     const moviesId = [];
     user.favoriteMovies.forEach((movie) => moviesId.push(movie.favoriteId));
     const userMovies = await lastValueFrom(
       this.tmdbRequestService.getMovies(filters),
     );
-    userMovies.map(
+    userMovies.results.map(
       (movie) => moviesId.includes(movie.id) && (movie.isSaved = true),
     );
     return userMovies;

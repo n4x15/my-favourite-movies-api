@@ -9,8 +9,8 @@ export class TmdbRequestResolver {
   constructor(private tmdbRequestService: TmdbRequestService) {}
 
   @Query(() => [GenresDto])
-  getGenres() {
-    return this.tmdbRequestService.getGenres();
+  getGenres(@Args('language') language: string) {
+    return this.tmdbRequestService.getGenres(language);
   }
 
   @Query(() => [MovieDto])
